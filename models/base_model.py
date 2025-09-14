@@ -15,25 +15,24 @@ class BaseModel:
     """Base class that other classes will inherit from."""
 
     def __init__(self, *args, **kwargs):
-        """Initialize a new BaseModel instance.
-
-        If kwargs is provided, initialize from dictionary (as from
-        storage). Otherwise, create a new instance with new id/time.
-        """
-        if kwargs:
-            for key, value in kwargs.items():
-                if key == "created_at":
-                    self.created_at = datetime.strptime(value, ISO_FMT)
-                elif key == "updated_at":
-                    self.updated_at = datetime.strptime(value, ISO_FMT)
-                else:
-                    setattr(self, key, value)
-            if "id" not in kwargs:
-                self.id = str(uuid.uuid4())
-        else:
+    """Initialize a new BaseModel instance."""
+    if kwargs:
+        for key, value in kwargs.items():
+            if key == "created_at":
+                self.created_at = datetime.strptime(value, ISO_FMT)
+            elif key == "updated_at":
+                self.updated_at = datetime.strptime(value, ISO_FMT)
+            elif key == "__class__":
+                # skip __class__, it's metadata
+                continue
+            else:
+                setattr(self, key, value)
+        if "id" not in kwargs:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+    else:
+        self.id = str(uuid.uuid4())
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
 
     def __str__(self):
         """Return a readable string representation."""
